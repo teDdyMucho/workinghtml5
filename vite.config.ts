@@ -16,7 +16,21 @@ export default defineConfig({
     headers: {
       'Cross-Origin-Embedder-Policy': 'credentialless',
       'Cross-Origin-Opener-Policy': 'same-origin'
-    }
+    },
+    // Add proper MIME type handling
+    middlewares: [
+      (req, res, next) => {
+        // Handle .webm files
+        if (req.url?.endsWith('.webm')) {
+          res.setHeader('Content-Type', 'video/webm');
+        }
+        // Handle module scripts
+        else if (req.url?.endsWith('.js')) {
+          res.setHeader('Content-Type', 'application/javascript');
+        }
+        next();
+      }
+    ]
   },
   build: {
     cssCodeSplit: false,
@@ -33,7 +47,5 @@ export default defineConfig({
         entryFileNames: 'assets/js/[name]-[hash].js',
       },
     },
-  },
-  // Add static file serving for the game files
-  //publicDir: 'src/components/games/html5/MinesZip'
+  }
 });
